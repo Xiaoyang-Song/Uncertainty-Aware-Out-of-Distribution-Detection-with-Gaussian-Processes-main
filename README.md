@@ -95,9 +95,12 @@ pytorch=1.12.1
 CUDA=12.8.0
 CUDA Driver Version=570.124.06
 ```
-For all other packages, there are no specific version requirements as long as they are compatiable with the above versions and can be downloaded from `pip` or `conda`, depending on the package management system used in your local devices. For OS, we recommend running this on a RHEL system, which is common for cloud server. However, a windows OS with version 10+ with the specified cuda driver should also work smoothly. 
-
-For hardware, this code is primarily developed on Tesla V100-PCIE-16GB and NVIDIA A100 16GB. That said, any properly configured GPU with at least 12 GB memory should work smoothly.
+For your ease, we provide the following setup command:
+```
+conda env create -f environment.yml
+```
+However, if in case this command does not work as expected due to conflicts with OS or your local environment, we recommend download missing packages from `pip` or `conda` one after another, depending on the package management system used in your local devices. There are no specific version requirements as long as they are compatiable with the above versions.
+For OS, we recommend running this on a RHEL system, which is common for cloud server. However, a windows OS with version 10+ with the specified cuda driver should also work smoothly. For hardware, this code is primarily developed on Tesla V100-PCIE-16GB and NVIDIA A100 16GB. That said, any properly configured GPU with at least 12 GB memory should work smoothly.
 
 ### Neural Network Training
 

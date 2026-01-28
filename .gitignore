@@ -1,3 +1,5 @@
 .DS_Store
 /GP-Fitting/Rdata_ckpt/*/
 /GP-Fitting/*.txt
+/GP-Fitting/data/cifar100-128/
+laGP_CIFAR100.R
