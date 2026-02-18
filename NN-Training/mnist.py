@@ -30,7 +30,7 @@ def main():
 
 
 ##################################  Train   ###########################################################
-    train = False
+    train = True
     transform = transforms.Compose([ transforms.Resize((32, 32)), 
                                     transforms.Grayscale(num_output_channels=3),
                                     transforms.ToTensor()])
@@ -48,8 +48,8 @@ def main():
     # Perform the split
     train_dataset, validation_dataset = random_split(train_set, [train_size, val_size])
 
-    train_loader = DataLoader(train_dataset, batch_size=256, shuffle=True, num_workers=4)
-    validation_loader = DataLoader(validation_dataset, batch_size=256, shuffle=False, num_workers=4)
+    train_loader = DataLoader(train_dataset, batch_size=256, shuffle=True, num_workers=num_workers)
+    validation_loader = DataLoader(validation_dataset, batch_size=256, shuffle=False, num_workers=num_workers)
 
     n_channels = 3
     n_features = 32
@@ -178,7 +178,7 @@ def main():
 
 ##################################  Test   ############################################################
 
-    test_loader = DataLoader(test_set, batch_size=256, shuffle=False, num_workers=4)
+    test_loader = DataLoader(test_set, batch_size=256, shuffle=False, num_workers=num_workers)
     # Assuming the continuation from the previous script
     print('######################################')
     print('Start testing:')

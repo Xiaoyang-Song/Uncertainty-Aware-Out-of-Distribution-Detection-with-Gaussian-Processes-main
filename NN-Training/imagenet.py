@@ -40,6 +40,8 @@ def main():
 
     # Set device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # print(torch.__version__)
+    # print(torch.version.cuda)
     print(device)
 
 
@@ -73,8 +75,8 @@ def main():
     train_dataset, validation_dataset = random_split(train_set, [train_size, val_size])
     print("Dataset size: ", len(train_dataset), len(validation_dataset), len(test_set))
 
-    train_loader = DataLoader(train_dataset, batch_size=bsz, shuffle=True, num_workers=32)
-    validation_loader = DataLoader(validation_dataset, batch_size=bsz, shuffle=False, num_workers=32)
+    train_loader = DataLoader(train_dataset, batch_size=bsz, shuffle=True, num_workers=0)
+    validation_loader = DataLoader(validation_dataset, batch_size=bsz, shuffle=False, num_workers=0)
 
     if num_classes == 100:
         # Model: Resnet101
@@ -232,7 +234,7 @@ def main():
 
     test_set = validation_dataset + test_set
     print(len(test_set))
-    test_loader = DataLoader(test_set, batch_size=bsz, shuffle=False, num_workers=16)
+    test_loader = DataLoader(test_set, batch_size=bsz, shuffle=False, num_workers=0)
     # Assuming the continuation from the previous script
     print('######################################')
     print('Start testing:')
