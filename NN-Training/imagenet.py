@@ -27,6 +27,7 @@ np.random.seed(2024)
 def main():
     parser = argparse.ArgumentParser(description="details")
     parser.add_argument('--dset_id', type=int, required=False, default=0, help='dset_id')
+    parser.add_argument('--n_workers', type=int, required=False, default=0, help='n_workers')
     parser.add_argument('--num_classes', type=int, required=False, default=100, help='Number of classes')
     parser.add_argument('--bsz', type=int, required=False, default=64, help='batch size')
     parser.add_argument('--n_features', type=int, required=False, default=128, help='Number of features')
@@ -75,8 +76,8 @@ def main():
     train_dataset, validation_dataset = random_split(train_set, [train_size, val_size])
     print("Dataset size: ", len(train_dataset), len(validation_dataset), len(test_set))
 
-    train_loader = DataLoader(train_dataset, batch_size=bsz, shuffle=True, num_workers=0)
-    validation_loader = DataLoader(validation_dataset, batch_size=bsz, shuffle=False, num_workers=0)
+    train_loader = DataLoader(train_dataset, batch_size=bsz, shuffle=True, num_workers=args.n_workers)
+    validation_loader = DataLoader(validation_dataset, batch_size=bsz, shuffle=False, num_workers=args.n_workers)
 
     if num_classes == 100:
         # Model: Resnet101
@@ -234,7 +235,7 @@ def main():
 
     test_set = validation_dataset + test_set
     print(len(test_set))
-    test_loader = DataLoader(test_set, batch_size=bsz, shuffle=False, num_workers=0)
+    test_loader = DataLoader(test_set, batch_size=bsz, shuffle=False, num_workers=args.n_workers)
     # Assuming the continuation from the previous script
     print('######################################')
     print('Start testing:')
@@ -351,7 +352,7 @@ def main():
                                     transform=transforms.Compose([transforms.Resize((32, 32)), transforms.CenterCrop(32), 
                                                                   transforms.ToTensor(), 
                                                                   transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),]))
-        loader = torch.utils.data.DataLoader(data, shuffle=False, batch_size=512, num_workers=4)
+        loader = torch.utils.data.DataLoader(data, shuffle=False, batch_size=512, num_workers=args.n_workers)
 
     elif dset == 'DTD-Large':
         print('######################################')
@@ -360,7 +361,7 @@ def main():
                                     transform=transforms.Compose([transforms.Resize(256), transforms.CenterCrop((224, 224)), 
                                                                   transforms.ToTensor(), 
                                                                   transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),]))
-        loader = torch.utils.data.DataLoader(data, shuffle=False, batch_size=64, num_workers=16)
+        loader = torch.utils.data.DataLoader(data, shuffle=False, batch_size=64, num_workers=args.n_workers)
      
     elif dset == 'LSUN-C':
         print('######################################')
@@ -408,7 +409,7 @@ def main():
                                                                   transforms.CenterCrop(32), 
                                                                   transforms.ToTensor(),
                                                                   transforms.Normalize(mean, std)]))
-        loader = torch.utils.data.DataLoader(data, shuffle=False, batch_size=512, num_workers=16)
+        loader = torch.utils.data.DataLoader(data, shuffle=False, batch_size=512, num_workers=args.n_workers)
 
     elif dset == 'iNaturalist':
         print('######################################')
@@ -419,7 +420,7 @@ def main():
                                                                   transforms.ToTensor(),
                                                                   transforms.Normalize(mean=[0.485, 0.456, 0.406], 
                                                                                        std=[0.229, 0.224, 0.225])]))
-        loader = torch.utils.data.DataLoader(data, shuffle=False, batch_size=64, num_workers=16)
+        loader = torch.utils.data.DataLoader(data, shuffle=False, batch_size=64, num_workers=args.n_workers)
 
     elif dset == 'Places365-Large':
         print('######################################')
@@ -430,7 +431,7 @@ def main():
                                                                   transforms.ToTensor(),
                                                                   transforms.Normalize(mean=[0.485, 0.456, 0.406], 
                                                                                        std=[0.229, 0.224, 0.225])]))
-        loader = torch.utils.data.DataLoader(data, shuffle=False, batch_size=64, num_workers=16)
+        loader = torch.utils.data.DataLoader(data, shuffle=False, batch_size=64, num_workers=args.n_workers)
 
     elif dset == 'SUN':
         print('######################################')
@@ -441,7 +442,7 @@ def main():
                                                                   transforms.ToTensor(),
                                                                   transforms.Normalize(mean=[0.485, 0.456, 0.406], 
                                                                                        std=[0.229, 0.224, 0.225])]))
-        loader = torch.utils.data.DataLoader(data, shuffle=False, batch_size=64, num_workers=16)
+        loader = torch.utils.data.DataLoader(data, shuffle=False, batch_size=64, num_workers=args.n_workers)
     
     else:
         exit()

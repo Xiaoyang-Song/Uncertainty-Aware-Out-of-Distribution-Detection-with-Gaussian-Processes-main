@@ -67,21 +67,24 @@ Here we provide the following instructions for downloading relevant InD and OOD 
 
 #### In-Distribution Dataset
 
-The ImageNet10 dataset that we used is a subset of the well-known ImageNet1k (ILSVRC-2012) dataset. An automation `.sh` script for downloading this can be found [here](https://gist.github.com/BIGBALLON/8a71d225eff18d88e469e6ea9b39cef4). Alternatively, if you experience unexpected issues with using this automation script, we recommend manually download the dataset from [this website](https://www.image-net.org/index.php). The downloaded training and validation dataset should be extracted and placed in `./NN-Training/data/train` and `./NN-Training/data/val`, respectively. Typically, this download process will take a few hours even with automation script.
+The ImageNet10 dataset that we used is a subset of the well-known ImageNet1k (ILSVRC-2012) dataset. An automation script is provided under the `NN-Training/data/` folder with name `imagenet.sh`. To run it, please use the following command in the terminal:
+```
+cd NN-Training/data/
+bash imagenet.sh
+```
+Alternatively, if you experience unexpected issues with using this automation script, we recommend manually download the dataset from [this website](https://www.image-net.org/index.php). The downloaded training and validation dataset should be extracted and placed in `./NN-Training/data/train` and `./NN-Training/data/val`, respectively. Typically, this download process will take 3 - 5 hours on high-performance clusters (HPC). If the downloading and unzipping process is conducted on local computers, this process may take even more than 20 hours depending on file transition speeds of local computers.
 
-The 10 sub-classes in our ImageNet10 dataset are pre-chosen and are hard-coded in our codebase, which inherits from the codebase developed by [Ming et. al (2022)](https://github.com/deeplearning-wisc/MCM/tree/main?tab=readme-ov-file). 
-
-For simple benchmarking MNIST dataset, it can be easily retrieved from Pytorch dataset library.
+The 10 sub-classes in our ImageNet10 dataset are pre-chosen and are hard-coded in our codebase, which inherits from the codebase developed by [Ming et. al (2022)](https://github.com/deeplearning-wisc/MCM/tree/main?tab=readme-ov-file). For simple benchmarking MNIST dataset, it can be easily retrieved from Pytorch dataset library.
 
 #### Out-of-Distribution Dataset
 
-For downloading OOD datasets, we kindly refer the audience to the instructions mentioned in the "Dataset Preparation" section of [this repository](https://github.com/deeplearning-wisc/cider). For instance, to download LSUN-C dataset, you can run:
+For downloading OOD datasets, we have also provided a list of downloading commands for ease of users. These commands are wrapped into the file `ood.sh` under the `NN-Training/data/` folder, with instructions documented inside. For instance, to download LSUN-C dataset, you can run:
 ```
 cd NN-Training/data
 wget https://www.dropbox.com/s/fhtsw1m3qxlwj6h/LSUN.tar.gz
 tar -xvzf LSUN.tar.gz
 ```
-
+Note that these instructions are adopted from the "Dataset Preparation" section of [this repository](https://github.com/deeplearning-wisc/cider). 
 However, please keep in mind that all downloaded and extracted data should be placed under the folder `./NN-Training/data/`. 
 
 For simple OOD datasets used in MNIST benchmarking experiment, including CIFAR10, FashionMNIST, and [mini-ImageNet](https://drive.google.com/file/d/1Kot50VljGnN4exQtxN76_PoJhPrFJTim/view?usp=sharing), they can be either retrieved from the provided link or Pytorch dataset library.
@@ -91,16 +94,21 @@ Some key OS and environment specifications that this code is developed on are pr
 ```
 Red Hat Enterprise Linux (RHEL) 8.10
 python=3.9.7
-pytorch=1.12.1
-CUDA=12.8.0
+pytorch>=1.12.1
+CUDA>=12.8.0
 CUDA Driver Version=570.124.06
 ```
-For your ease, we provide the following setup command:
+For your ease, we provide the following setup commands (it is also wrapped into the `setup.sh` script):
 ```
-conda env create -f environment.yml
+# Create conda env
+conda create -n GPOOD2 python=3.9.7
+conda activate GPOOD2
+# Downloading relevant packages
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip install scikit-learn matplotlib tqdm
 ```
 However, if in case this command does not work as expected due to conflicts with OS or your local environment, we recommend download missing packages from `pip` or `conda` one after another, depending on the package management system used in your local devices. There are no specific version requirements as long as they are compatiable with the above versions.
-For OS, we recommend running this on a RHEL system, which is common for cloud server. However, a windows OS with version 10+ with the specified cuda driver should also work smoothly. For hardware, this code is primarily developed on Tesla V100-PCIE-16GB and NVIDIA A100 16GB. That said, any properly configured GPU with at least 12 GB memory should work smoothly.
+For OS, we highly recommend running this on a RHEL system, which is common for cloud server. However, a windows OS with version 10+ with the specified cuda driver should also work smoothly. For hardware, this code is primarily developed on Tesla V100-PCIE-16GB and NVIDIA A100 16GB. That said, any properly configured GPU with at least 12 GB memory should work smoothly.
 
 ### Neural Network Training
 
@@ -116,7 +124,7 @@ cd NN-Training
 For MNIST experiment, as the classification task is not very difficult, we choose to hardcode all parameters in the script; the command is given by:
 
 ```
-python mnist.py
+python mnist.py --train
 ```
 
 However, those parameters, including learning rate, feature size, batch size, and epochs, can be adjusted easily in `mnist.py`.
@@ -126,7 +134,7 @@ However, those parameters, including learning rate, feature size, batch size, an
 To train a classifier for ImageNet10 dataset and evaluate them on all OOD datasets, one example command is provided as follows:
 
 ```
-python imagenet.py --lr=0.1 --num_classes=10 --bsz=256 --n_features=32 --dset_id 0 --train --eval_train
+python imagenet.py --lr=0.1 --num_classes=10 --bsz=256 --n_features=32 --dset_id 0 --train --eval_train --verbose
 ```
 
 Note that the learning rate, batch size, and the number of features in the penultimate layer can be adjusted from the command. To evaluate on the OOD datasets, we can simply specify the dataset by adding `--ood <dset name>` and remove the `--train` and `--eval_train` flag to avoid repetitve training. For instance, one example command is provided as follows:
@@ -136,6 +144,9 @@ python imagenet.py --lr=0.1 --num_classes=10 --bsz=256 --n_features=32 --dset_id
 ```
 
 After training and evaluation, the trained model checkpoint as well as all features are saved under the folder `ckpt/`. These features and logits will then be utilized for training of GP models.
+
+#### Remarks and Tips
+As suggested in the environment section, it is highly recommended to run the experiments on HPCs due to its high file processing speeds and parallelization performance. If you are running on local computer, we set the default number of workers for data loader to be zero. However, to speed up the training and data loading on cloud server, the number of parallel workers can be adjusted by changing the `--n_workers` argument for both MNIST and ImageNet experiments.
 
 ## Contributions
 We extend our gratitude to the contributors who provided valuable insights and resources that facilitated the development of this project.

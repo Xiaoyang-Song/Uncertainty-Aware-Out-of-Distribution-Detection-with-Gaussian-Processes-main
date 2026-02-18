@@ -24,14 +24,20 @@ torch.manual_seed(42)
 np.random.seed(42)
 
 def main():
+
+    parser = argparse.ArgumentParser(description="details")
+    parser.add_argument('--n_workers', type=int, required=False, default=0, help='n_workers')
+    parser.add_argument('--train', action='store_true', help='train models')
+    args = parser.parse_args()
+
     # Set device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
 
 
 ##################################  Train   ###########################################################
-    train = True
-    transform = transforms.Compose([ transforms.Resize((32, 32)), 
+    train = args.train
+    transform = transforms.Compose([transforms.Resize((32, 32)), 
                                     transforms.Grayscale(num_output_channels=3),
                                     transforms.ToTensor()])
     train_set = torchvision.datasets.MNIST("./Datasets", download=True, transform=transform)
@@ -47,7 +53,7 @@ def main():
 
     # Perform the split
     train_dataset, validation_dataset = random_split(train_set, [train_size, val_size])
-
+    num_workers = args.n_workers
     train_loader = DataLoader(train_dataset, batch_size=256, shuffle=True, num_workers=num_workers)
     validation_loader = DataLoader(validation_dataset, batch_size=256, shuffle=False, num_workers=num_workers)
 
